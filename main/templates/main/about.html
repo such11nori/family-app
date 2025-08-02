@@ -1,0 +1,70 @@
+{% extends 'main/base.html' %}
+
+{% block title %}このアプリについて - 家族アプリ{% endblock %}
+
+{% block content %}
+<h1>📖 このアプリについて</h1>
+
+<div style="margin-top: 2rem;">
+    <h2>🎯 目的</h2>
+    <p>この家族アプリは、Django初心者の学習を目的として作成されました。家族の情報やイベントを効率的に管理できるシンプルなWebアプリケーションです。</p>
+</div>
+
+<div style="margin-top: 2rem;">
+    <h2>⚡ 技術スタック</h2>
+    <ul style="list-style-type: none; padding: 0;">
+        <li style="background-color: #e8f4fd; padding: 0.5rem; margin: 0.5rem 0; border-radius: 4px;">
+            🐍 <strong>Python:</strong> バックエンドプログラミング言語
+        </li>
+        <li style="background-color: #f0f9ff; padding: 0.5rem; margin: 0.5rem 0; border-radius: 4px;">
+            🎸 <strong>Django:</strong> Webフレームワーク
+        </li>
+        <li style="background-color: #fff3cd; padding: 0.5rem; margin: 0.5rem 0; border-radius: 4px;">
+            🗄️ <strong>SQLite:</strong> データベース
+        </li>
+        <li style="background-color: #d1ecf1; padding: 0.5rem; margin: 0.5rem 0; border-radius: 4px;">
+            🎨 <strong>HTML/CSS:</strong> フロントエンド
+        </li>
+    </ul>
+</div>
+
+<div style="margin-top: 2rem;">
+    <h2>📋 主な機能</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+        <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #dee2e6;">
+            <h4>👥 家族メンバー管理</h4>
+            <p>家族のプロフィール情報を登録・編集できます（予定）</p>
+        </div>
+        <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #dee2e6;">
+            <h4>📅 イベント管理</h4>
+            <p>家族のイベントやスケジュールを共有できます（予定）</p>
+        </div>
+        <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #dee2e6;">
+            <h4>📸 写真ギャラリー</h4>
+            <p>家族の思い出の写真を保存・共有できます（予定）</p>
+        </div>
+        <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #dee2e6;">
+            <h4>✅ タスク管理</h4>
+            <p>家事や用事などのタスクを管理できます（予定）</p>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top: 3rem; padding: 1.5rem; background-color: #d4edda; border-radius: 8px; border: 1px solid #c3e6cb;">
+    <h3>🌟 Django初心者向けのポイント</h3>
+    <p>このアプリを通じて以下のDjangoの基本概念を学ぶことができます：</p>
+    <ul>
+        <li>プロジェクトとアプリの構造</li>
+        <li>モデル（Model）・ビュー（View）・テンプレート（Template）の設計</li>
+        <li>URLルーティング</li>
+        <li>管理画面の活用</li>
+        <li>データベースのマイグレーション</li>
+    </ul>
+</div>
+
+<div style="text-align: center; margin-top: 2rem;">
+    <a href="{% url 'home' %}" style="background-color: #007bff; color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 4px;">
+        🏠 ホームに戻る
+    </a>
+</div>
+{% endblock %}

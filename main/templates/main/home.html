@@ -1,0 +1,65 @@
+{% extends 'main/base.html' %}
+
+{% block title %}ホーム - 家族アプリ{% endblock %}
+
+{% block content %}
+<div style="text-align: center; margin-bottom: 3rem;">
+    <h1 style="font-size: 3rem; color: #2c3e50; margin-bottom: 1rem;">🏠 家族アプリ</h1>
+    <p style="font-size: 1.2rem; color: #7f8c8d; max-width: 600px; margin: 0 auto;">
+        家族みんなで使える、シンプルで使いやすいWebアプリケーションです。
+    </p>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 12px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">👨‍👩‍👧‍👦</div>
+        <h3 style="margin-bottom: 1rem;">家族メンバー</h3>
+        <p style="opacity: 0.9; margin-bottom: 1.5rem;">家族の情報を一元管理</p>
+        <button style="background-color: rgba(255,255,255,0.2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">
+            準備中
+        </button>
+    </div>
+
+    <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 2rem; border-radius: 12px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📅</div>
+        <h3 style="margin-bottom: 1rem;">イベント管理</h3>
+        <p style="opacity: 0.9; margin-bottom: 1.5rem;">大切な予定を共有</p>
+        <button style="background-color: rgba(255,255,255,0.2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">
+            準備中
+        </button>
+    </div>
+
+    <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 2rem; border-radius: 12px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📸</div>
+        <h3 style="margin-bottom: 1rem;">フォトギャラリー</h3>
+        <p style="opacity: 0.9; margin-bottom: 1.5rem;">思い出の写真を保存</p>
+        <button style="background-color: rgba(255,255,255,0.2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">
+            準備中
+        </button>
+    </div>
+</div>
+
+<div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 2rem; border-radius: 12px; text-align: center; margin-bottom: 2rem;">
+    <h2 style="color: #2c3e50; margin-bottom: 1rem;">🎉 家族みんなでアクセス可能！</h2>
+    <p style="color: #555; font-size: 1.1rem; margin-bottom: 1rem;">
+        このアプリはインターネット上で動作するので、スマートフォンやタブレット、パソコンからいつでもアクセスできます。
+    </p>
+    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem;">
+        <div style="background-color: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            📱 スマートフォン
+        </div>
+        <div style="background-color: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            💻 パソコン
+        </div>
+        <div style="background-color: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            📱 タブレット
+        </div>
+    </div>
+</div>
+
+<div style="text-align: center;">
+    <p style="color: #7f8c8d; font-style: italic;">
+        「家族の絆を深める、デジタルな家族の居場所」
+    </p>
+</div>
+{% endblock %}
