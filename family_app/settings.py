@@ -25,11 +25,22 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-your-development-key-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_ENV') != 'production'
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '.onrender.com',  # Renderのドメインを許可
-]
+# ALLOWED_HOSTS設定
+if DEBUG:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+else:
+    # 本番環境では環境変数から取得、または Render のデフォルト設定
+    allowed_hosts = os.environ.get('ALLOWED_HOSTS', '').split(',')
+    ALLOWED_HOSTS = [
+        'localhost',
+        '127.0.0.1',
+        '.onrender.com',
+        'family-app-j7yv.onrender.com',
+        '*.onrender.com',
+    ]
+    # 環境変数があれば追加
+    if allowed_hosts and allowed_hosts[0]:
+        ALLOWED_HOSTS.extend(allowed_hosts)
 
 # Application definition
 INSTALLED_APPS = [
