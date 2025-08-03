@@ -1,0 +1,490 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    {% if object %}
+        イベント編集 - {{ object.title }}
+    {% else %}
+        新しいイベント作成
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+    .form-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #ecf0f1;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+        box-sizing: border-box;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+    
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-check-input {
+        width: auto;
+    }
+    
+    .participants-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 0.5rem;
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 6px;
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 6px;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary {
+        background: #3498db;
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: #95a5a6;
+        color: white;
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .help-text {
+        font-size: 0.875rem;
+        color: #7f8c8d;
+        margin-top: 0.25rem;
+    }
+    
+    .error-list {
+        color: #e74c3c;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        list-style: none;
+        padding: 0;
+    }
+    
+    .error-list li {
+        padding: 0.25rem 0;
+    }
+    
+    .time-group {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .all-day-toggle {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 1rem;
+            margin: 1rem;
+        }
+        
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .btn-group {
+            flex-direction: column;
+        }
+        
+        .time-group {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+</style>
+
+<div class="form-container">
+    <div class="form-header">
+        <h1>
+            {% if object %}
+                ✏️ イベント編集
+            {% else %}
+                ➕ 新しいイベント作成
+            {% endif %}
+        </h1>
+        <p style="color: #7f8c8d; margin: 0;">
+            家族みんなで共有する大切なイベントを登録しましょう
+        </p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- 基本情報 -->
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label class="form-label" for="{{ form.title.id_for_label }}">
+                    📝 イベント名 *
+                </label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <ul class="error-list">
+                        {% for error in form.title.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="{{ form.category.id_for_label }}">
+                    🏷️ カテゴリ
+                </label>
+                {{ form.category }}
+                {% if form.category.errors %}
+                    <ul class="error-list">
+                        {% for error in form.category.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="{{ form.priority.id_for_label }}">
+                    ⭐ 重要度
+                </label>
+                {{ form.priority }}
+                {% if form.priority.errors %}
+                    <ul class="error-list">
+                        {% for error in form.priority.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <div class="form-group full-width">
+                <label class="form-label" for="{{ form.location.id_for_label }}">
+                    📍 場所
+                </label>
+                {{ form.location }}
+                {% if form.location.errors %}
+                    <ul class="error-list">
+                        {% for error in form.location.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- 日時設定 -->
+        <div class="all-day-toggle">
+            <div class="form-check">
+                {{ form.is_all_day }}
+                <label class="form-label" for="{{ form.is_all_day.id_for_label }}">
+                    🌅 終日イベント
+                </label>
+            </div>
+        </div>
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label" for="{{ form.start_date.id_for_label }}">
+                    📅 開始日 *
+                </label>
+                {{ form.start_date }}
+                {% if form.start_date.errors %}
+                    <ul class="error-list">
+                        {% for error in form.start_date.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="{{ form.end_date.id_for_label }}">
+                    📅 終了日
+                </label>
+                {{ form.end_date }}
+                {% if form.end_date.errors %}
+                    <ul class="error-list">
+                        {% for error in form.end_date.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <div class="form-group" id="start-time-group">
+                <label class="form-label" for="{{ form.start_time.id_for_label }}">
+                    🕐 開始時刻
+                </label>
+                {{ form.start_time }}
+                {% if form.start_time.errors %}
+                    <ul class="error-list">
+                        {% for error in form.start_time.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <div class="form-group" id="end-time-group">
+                <label class="form-label" for="{{ form.end_time.id_for_label }}">
+                    🕐 終了時刻
+                </label>
+                {{ form.end_time }}
+                {% if form.end_time.errors %}
+                    <ul class="error-list">
+                        {% for error in form.end_time.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- 繰り返し設定 -->
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label" for="{{ form.repeat.id_for_label }}">
+                    🔄 繰り返し
+                </label>
+                {{ form.repeat }}
+                {% if form.repeat.errors %}
+                    <ul class="error-list">
+                        {% for error in form.repeat.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <div class="form-group" id="repeat-until-group">
+                <label class="form-label" for="{{ form.repeat_until.id_for_label }}">
+                    📅 繰り返し終了日
+                </label>
+                {{ form.repeat_until }}
+                {% if form.repeat_until.errors %}
+                    <ul class="error-list">
+                        {% for error in form.repeat_until.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- 詳細説明 -->
+        <div class="form-group">
+            <label class="form-label" for="{{ form.description.id_for_label }}">
+                📋 詳細説明
+            </label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <ul class="error-list">
+                    {% for error in form.description.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <div class="help-text">
+                イベントの詳細や準備事項などを記載してください
+            </div>
+        </div>
+        
+        <!-- 参加者選択 -->
+        <div class="form-group">
+            <label class="form-label">👥 参加者</label>
+            <div class="participants-group">
+                {% for choice in form.participants %}
+                    <div class="form-check">
+                        {{ choice.tag }}
+                        <label for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if form.participants.errors %}
+                <ul class="error-list">
+                    {% for error in form.participants.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <div class="help-text">
+                参加者が選択されていない場合は、全員参加として扱われます
+            </div>
+        </div>
+        
+        <!-- リマインダー設定 -->
+        <div class="form-grid">
+            <div class="form-group">
+                <div class="form-check">
+                    {{ form.is_reminder_enabled }}
+                    <label class="form-label" for="{{ form.is_reminder_enabled.id_for_label }}">
+                        🔔 リマインダーを有効にする
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group" id="reminder-minutes-group">
+                <label class="form-label" for="{{ form.reminder_minutes.id_for_label }}">
+                    ⏰ リマインダー時間（分前）
+                </label>
+                {{ form.reminder_minutes }}
+                {% if form.reminder_minutes.errors %}
+                    <ul class="error-list">
+                        {% for error in form.reminder_minutes.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- フォームエラー -->
+        {% if form.non_field_errors %}
+            <div style="background: #fdf2f2; border: 1px solid #f5c6cb; color: #721c24; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <!-- ボタン -->
+        <div class="btn-group">
+            <button type="submit" class="btn btn-primary">
+                {% if object %}
+                    💾 更新する
+                {% else %}
+                    ➕ 作成する
+                {% endif %}
+            </button>
+            <a href="{% url 'event_calendar' %}" class="btn btn-secondary">
+                ❌ キャンセル
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const allDayCheckbox = document.getElementById('{{ form.is_all_day.id_for_label }}');
+    const startTimeGroup = document.getElementById('start-time-group');
+    const endTimeGroup = document.getElementById('end-time-group');
+    const repeatSelect = document.getElementById('{{ form.repeat.id_for_label }}');
+    const repeatUntilGroup = document.getElementById('repeat-until-group');
+    const reminderCheckbox = document.getElementById('{{ form.is_reminder_enabled.id_for_label }}');
+    const reminderMinutesGroup = document.getElementById('reminder-minutes-group');
+    
+    // 終日設定の切り替え
+    function toggleTimeFields() {
+        if (allDayCheckbox.checked) {
+            startTimeGroup.style.display = 'none';
+            endTimeGroup.style.display = 'none';
+        } else {
+            startTimeGroup.style.display = 'block';
+            endTimeGroup.style.display = 'block';
+        }
+    }
+    
+    // 繰り返し設定の切り替え
+    function toggleRepeatUntil() {
+        if (repeatSelect.value === 'none') {
+            repeatUntilGroup.style.display = 'none';
+        } else {
+            repeatUntilGroup.style.display = 'block';
+        }
+    }
+    
+    // リマインダー設定の切り替え
+    function toggleReminder() {
+        if (reminderCheckbox.checked) {
+            reminderMinutesGroup.style.display = 'block';
+        } else {
+            reminderMinutesGroup.style.display = 'none';
+        }
+    }
+    
+    // イベントリスナー設定
+    allDayCheckbox.addEventListener('change', toggleTimeFields);
+    repeatSelect.addEventListener('change', toggleRepeatUntil);
+    reminderCheckbox.addEventListener('change', toggleReminder);
+    
+    // 初期状態設定
+    toggleTimeFields();
+    toggleRepeatUntil();
+    toggleReminder();
+});
+</script>
+{% endblock %}

@@ -8,9 +8,9 @@ django.setup()
 from django.contrib.auth.models import User
 
 # スーパーユーザーの情報
-username = 'admin'
-email = 'admin@family-app.com'
-password = 'FamilyApp2025!'
+username = os.environ.get('ADMIN_USERNAME', 'admin')
+email = os.environ.get('ADMIN_EMAIL', 'admin@family-app.com')
+password = os.environ.get('ADMIN_PASSWORD', 'FamilyApp2025!')
 
 # スーパーユーザーが存在しない場合のみ作成
 if not User.objects.filter(username=username).exists():

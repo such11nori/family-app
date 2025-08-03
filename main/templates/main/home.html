@@ -15,27 +15,27 @@
         <div style="font-size: 3rem; margin-bottom: 1rem;">👨‍👩‍👧‍👦</div>
         <h3 style="margin-bottom: 1rem;">家族メンバー</h3>
         <p style="opacity: 0.9; margin-bottom: 1.5rem;">家族の情報を一元管理</p>
-        <button style="background-color: rgba(255,255,255,0.2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">
-            準備中
-        </button>
+        <a href="{% url 'family_list' %}" style="background-color: rgba(255,255,255,0.2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; transition: all 0.2s;">
+            家族を見る
+        </a>
     </div>
 
     <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 2rem; border-radius: 12px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
         <div style="font-size: 3rem; margin-bottom: 1rem;">📅</div>
         <h3 style="margin-bottom: 1rem;">イベント管理</h3>
-        <p style="opacity: 0.9; margin-bottom: 1.5rem;">大切な予定を共有</p>
-        <button style="background-color: rgba(255,255,255,0.2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">
-            準備中
-        </button>
+        <p style="opacity: 0.9; margin-bottom: 1.5rem;">家族の大切な予定をカレンダーで管理</p>
+        <a href="{% url 'event_calendar' %}" style="background-color: rgba(255,255,255,0.2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; transition: all 0.2s;">
+            カレンダーを見る
+        </a>
     </div>
 
     <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 2rem; border-radius: 12px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
         <div style="font-size: 3rem; margin-bottom: 1rem;">📸</div>
         <h3 style="margin-bottom: 1rem;">フォトギャラリー</h3>
-        <p style="opacity: 0.9; margin-bottom: 1.5rem;">思い出の写真を保存</p>
-        <button style="background-color: rgba(255,255,255,0.2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">
-            準備中
-        </button>
+        <p style="opacity: 0.9; margin-bottom: 1.5rem;">思い出の写真をタグやコメント付きで管理</p>
+        <a href="{% url 'photo_gallery' %}" style="background-color: rgba(255,255,255,0.2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; transition: all 0.2s;">
+            ギャラリーを見る
+        </a>
     </div>
 </div>
 

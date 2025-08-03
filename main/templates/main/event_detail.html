@@ -1,0 +1,297 @@
+{% extends 'main/base.html' %}
+{% load family_tags %}
+
+{% block title %}{{ event.title }} - イベント詳細{% endblock %}
+
+{% block content %}
+<style>
+    .event-detail {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .event-header {
+        border-bottom: 2px solid #ecf0f1;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .event-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .event-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .meta-item {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #3498db;
+    }
+    
+    .meta-label {
+        font-weight: bold;
+        color: #2c3e50;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+    
+    .meta-value {
+        color: #555;
+    }
+    
+    .category-display {
+        padding: 4px 12px;
+        border-radius: 16px;
+        color: white;
+        font-weight: bold;
+        display: inline-block;
+    }
+    
+    .participants-list {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .participant-badge {
+        background: #ecf0f1;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.9rem;
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary {
+        background: #3498db;
+        color: white;
+    }
+    
+    .btn-warning {
+        background: #f39c12;
+        color: white;
+    }
+    
+    .btn-danger {
+        background: #e74c3c;
+        color: white;
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .related-events {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .related-event-item {
+        padding: 1rem;
+        border: 1px solid #ecf0f1;
+        border-radius: 6px;
+        margin-bottom: 0.5rem;
+        transition: background-color 0.2s;
+    }
+    
+    .related-event-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .priority-high { border-left-color: #e74c3c; }
+    .priority-normal { border-left-color: #2ecc71; }
+    .priority-low { border-left-color: #3498db; }
+    .priority-urgent { border-left-color: #e74c3c; }
+    
+    @media (max-width: 768px) {
+        .event-detail {
+            padding: 1rem;
+        }
+        
+        .event-meta {
+            grid-template-columns: 1fr;
+        }
+        
+        .btn-group {
+            flex-direction: column;
+        }
+        
+        .event-title {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="event-detail priority-{{ event.priority }}">
+    <div class="event-header">
+        <div class="event-title">
+            <h1 style="margin: 0; color: #2c3e50;">
+                {{ event.get_priority_emoji }} {{ event.title }}
+            </h1>
+            {% if event.category %}
+                <span class="category-display" style="background-color: {{ event.category.color }};">
+                    {{ event.category.emoji }} {{ event.category.name }}
+                </span>
+            {% endif %}
+        </div>
+        
+        <p style="color: #7f8c8d; margin: 0;">
+            作成者: {{ event.created_by.username }} | 
+            作成日: {{ event.created_at|date:"Y年n月j日" }}
+        </p>
+    </div>
+    
+    <div class="btn-group">
+        <a href="{% url 'event_calendar' %}" class="btn btn-primary">
+            ← カレンダーに戻る
+        </a>
+        <a href="{% url 'event_update' event.pk %}" class="btn btn-warning">
+            ✏️ 編集
+        </a>
+        <a href="{% url 'event_delete' event.pk %}" class="btn btn-danger"
+           onclick="return confirm('このイベントを削除しますか？')">
+            🗑️ 削除
+        </a>
+    </div>
+    
+    <div class="event-meta">
+        <div class="meta-item">
+            <span class="meta-label">📅 開催期間</span>
+            <div class="meta-value">{{ event.get_duration_display }}</div>
+        </div>
+        
+        {% if event.location %}
+        <div class="meta-item">
+            <span class="meta-label">📍 場所</span>
+            <div class="meta-value">{{ event.location }}</div>
+        </div>
+        {% endif %}
+        
+        <div class="meta-item">
+            <span class="meta-label">⭐ 重要度</span>
+            <div class="meta-value">
+                {{ event.get_priority_emoji }} {{ event.get_priority_display }}
+            </div>
+        </div>
+        
+        {% if event.repeat != 'none' %}
+        <div class="meta-item">
+            <span class="meta-label">🔄 繰り返し</span>
+            <div class="meta-value">
+                {{ event.get_repeat_display }}
+                {% if event.repeat_until %}
+                    ({{ event.repeat_until }}まで)
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="meta-item">
+            <span class="meta-label">🔔 リマインダー</span>
+            <div class="meta-value">
+                {% if event.is_reminder_enabled %}
+                    {{ event.reminder_minutes }}分前に通知
+                {% else %}
+                    無効
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="meta-item">
+            <span class="meta-label">👥 参加者</span>
+            <div class="meta-value">
+                {% if event.participants.all %}
+                    <div class="participants-list">
+                        {% for participant in event.participants.all %}
+                            <span class="participant-badge">
+                                {% get_role_emoji participant.role %} {{ participant.name }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    全員参加
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    {% if event.description %}
+    <div style="margin-bottom: 2rem;">
+        <h3 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 0.5rem;">
+            📝 詳細
+        </h3>
+        <div style="background: #f8f9fa; padding: 1rem; border-radius: 6px; line-height: 1.6;">
+            {{ event.description|linebreaksbr }}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- 関連イベント -->
+{% if related_events %}
+<div class="related-events">
+    <h3 style="color: #2c3e50; margin-bottom: 1rem;">
+        🔗 関連するイベント
+    </h3>
+    
+    {% for related_event in related_events %}
+        <div class="related-event-item">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="margin: 0; margin-bottom: 0.25rem;">
+                        <a href="{% url 'event_detail' related_event.id %}" 
+                           style="text-decoration: none; color: #2c3e50;">
+                            {{ related_event.get_priority_emoji }} {{ related_event.title }}
+                        </a>
+                    </h4>
+                    <p style="margin: 0; color: #7f8c8d; font-size: 0.9rem;">
+                        📅 {{ related_event.get_duration_display }}
+                        {% if related_event.category %}
+                            | {{ related_event.category.emoji }} {{ related_event.category.name }}
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // イベント詳細ページの動的な機能をここに追加
+    console.log('イベント詳細ページが読み込まれました: {{ event.title }}');
+});
+</script>
+{% endblock %}

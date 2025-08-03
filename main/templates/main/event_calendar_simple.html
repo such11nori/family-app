@@ -1,0 +1,137 @@
+{% extends 'main/base.html' %}
+
+{% block title %}イベントカレンダー - 家族アプリ{% endblock %}
+
+{% block content %}
+<style>
+    .event-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .event-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-left: 4px solid #3498db;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 6px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: bold;
+        display: inline-block;
+        margin-right: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .btn-primary {
+        background: #3498db;
+        color: white;
+    }
+    
+    .btn-success {
+        background: #2ecc71;
+        color: white;
+    }
+    
+    .btn:hover {
+        opacity: 0.8;
+    }
+</style>
+
+<div class="event-header">
+    <h1>📅 家族イベントカレンダー</h1>
+    <p>家族みんなの大切な予定を一緒に管理しましょう</p>
+</div>
+
+<!-- ボタングループ -->
+<div style="margin-bottom: 2rem;">
+    <a href="{% url 'event_create' %}" class="btn btn-primary">
+        ➕ 新しいイベント
+    </a>
+    <a href="{% url 'category_list' %}" class="btn btn-success">
+        🏷️ カテゴリ管理
+    </a>
+    <a href="{% url 'home' %}" class="btn" style="background: #95a5a6; color: white;">
+        🏠 ホームに戻る
+    </a>
+</div>
+
+<!-- 今日のイベント -->
+{% if today_events %}
+<div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+    <h3>🎯 今日のイベント ({{ today }})</h3>
+    {% for event in today_events %}
+        <div class="event-card">
+            <h4>{{ event.title }}</h4>
+            {% if event.description %}
+                <p>{{ event.description|truncatewords:20 }}</p>
+            {% endif %}
+            <p>📅 {{ event.start_date }}
+            {% if event.start_time %} {{ event.start_time }}{% endif %}
+            {% if event.location %} | 📍 {{ event.location }}{% endif %}
+            </p>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- イベント一覧 -->
+<div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <h3>📋 すべてのイベント</h3>
+    
+    {% if events %}
+        {% for event in events %}
+            <div class="event-card">
+                <h4>
+                    <a href="{% url 'event_detail' event.id %}" style="text-decoration: none; color: #2c3e50;">
+                        {{ event.title }}
+                    </a>
+                </h4>
+                {% if event.description %}
+                    <p>{{ event.description|truncatewords:20 }}</p>
+                {% endif %}
+                <p>
+                    📅 {{ event.start_date }}
+                    {% if event.start_time %} {{ event.start_time }}{% endif %}
+                    {% if event.location %} | 📍 {{ event.location }}{% endif %}
+                    {% if event.category %} | 🏷️ {{ event.category.emoji }} {{ event.category.name }}{% endif %}
+                </p>
+                <div style="margin-top: 1rem;">
+                    <a href="{% url 'event_update' event.pk %}" class="btn" style="background: #f39c12; color: white; padding: 0.25rem 0.5rem; font-size: 0.9rem;">
+                        ✏️ 編集
+                    </a>
+                    <a href="{% url 'event_delete' event.pk %}" class="btn" style="background: #e74c3c; color: white; padding: 0.25rem 0.5rem; font-size: 0.9rem;"
+                       onclick="return confirm('このイベントを削除しますか？')">
+                        🗑️ 削除
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; padding: 2rem; color: #7f8c8d;">
+            <p>📅 まだイベントが登録されていません</p>
+            <a href="{% url 'event_create' %}" class="btn btn-primary">
+                最初のイベントを作成する
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('イベントカレンダーページが正常に読み込まれました');
+});
+</script>
+{% endblock %}

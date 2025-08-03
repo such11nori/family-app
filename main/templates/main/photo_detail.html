@@ -1,0 +1,553 @@
+{% extends 'main/base.html' %}
+{% load family_tags %}
+{% load static %}
+
+{% block title %}{{ photo.title }} - フォトギャラリー - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .photo-detail {
+        padding: 2rem 0;
+    }
+    
+    .photo-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+        border-radius: 20px;
+    }
+    
+    .photo-main {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 3rem;
+        margin-bottom: 3rem;
+    }
+    
+    .photo-image-section {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    }
+    
+    .photo-main-image {
+        width: 100%;
+        height: auto;
+        display: block;
+        max-height: 70vh;
+        object-fit: contain;
+    }
+    
+    .photo-info-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        height: fit-content;
+    }
+    
+    .photo-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+    
+    .photo-meta-grid {
+        display: grid;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .meta-icon {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+    
+    .meta-content {
+        flex: 1;
+    }
+    
+    .meta-label {
+        font-weight: 600;
+        color: #34495e;
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .meta-value {
+        color: #2c3e50;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+    
+    .photo-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .photo-tag {
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .photo-tag:hover {
+        opacity: 0.8;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+    
+    .photo-members {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .member-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #e8f5e8;
+        color: #27ae60;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .member-link:hover {
+        background: #27ae60;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+    
+    .photo-description {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 10px;
+        border-left: 4px solid #3498db;
+        font-size: 1rem;
+        line-height: 1.7;
+        color: #2c3e50;
+        margin-bottom: 2rem;
+    }
+    
+    .photo-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .action-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-favorite {
+        background: #e74c3c;
+        color: white;
+    }
+    
+    .btn-favorite.active {
+        background: #c0392b;
+    }
+    
+    .btn-favorite:hover {
+        background: #c0392b;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .btn-edit {
+        background: #f39c12;
+        color: white;
+    }
+    
+    .btn-edit:hover {
+        background: #e67e22;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .btn-back {
+        background: #95a5a6;
+        color: white;
+    }
+    
+    .btn-back:hover {
+        background: #7f8c8d;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .related-photos {
+        margin-top: 4rem;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .related-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .related-item {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .related-item:hover {
+        transform: translateY(-5px);
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .related-image {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+    }
+    
+    .related-info {
+        padding: 1rem;
+    }
+    
+    .related-title {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    
+    .related-date {
+        color: #7f8c8d;
+        font-size: 0.8rem;
+    }
+    
+    .breadcrumb-nav {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 2rem;
+    }
+    
+    .breadcrumb {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1rem 1.5rem;
+        margin: 0;
+    }
+    
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: "🔗";
+        color: #6c757d;
+    }
+    
+    @media (max-width: 768px) {
+        .photo-main {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        .photo-hero {
+            padding: 2rem 0;
+            margin: 1rem;
+            border-radius: 15px;
+        }
+        
+        .photo-title {
+            font-size: 1.5rem;
+        }
+        
+        .photo-actions {
+            justify-content: center;
+        }
+        
+        .related-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="photo-detail">
+    <div class="container">
+        <!-- パンくずリスト -->
+        <nav class="breadcrumb-nav">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">ホーム</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'photo_gallery' %}">フォトギャラリー</a></li>
+                <li class="breadcrumb-item active">{{ photo.title }}</li>
+            </ol>
+        </nav>
+
+        <!-- メイン写真セクション -->
+        <div class="photo-main">
+            <!-- 写真画像 -->
+            <div class="photo-image-section">
+                <img src="{{ photo.image.url }}" alt="{{ photo.title }}" class="photo-main-image">
+            </div>
+
+            <!-- 写真情報 -->
+            <div class="photo-info-section">
+                <h1 class="photo-title">{{ photo.title }}</h1>
+
+                <div class="photo-meta-grid">
+                    <!-- 撮影日 -->
+                    <div class="meta-item">
+                        <div class="meta-icon">📅</div>
+                        <div class="meta-content">
+                            <div class="meta-label">撮影日</div>
+                            <div class="meta-value">{{ photo.taken_date|japanese_date }}</div>
+                        </div>
+                    </div>
+
+                    <!-- 撮影場所 -->
+                    {% if photo.location %}
+                        <div class="meta-item">
+                            <div class="meta-icon">📍</div>
+                            <div class="meta-content">
+                                <div class="meta-label">撮影場所</div>
+                                <div class="meta-value">{{ photo.location }}</div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- アルバム -->
+                    {% if photo.album %}
+                        <div class="meta-item">
+                            <div class="meta-icon">📂</div>
+                            <div class="meta-content">
+                                <div class="meta-label">アルバム</div>
+                                <div class="meta-value">
+                                    <a href="{% url 'album_detail' photo.album.pk %}">{{ photo.album.title }}</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- アップロード情報 -->
+                    <div class="meta-item">
+                        <div class="meta-icon">⏰</div>
+                        <div class="meta-content">
+                            <div class="meta-label">アップロード日</div>
+                            <div class="meta-value">{{ photo.created_at|japanese_date }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- タグ -->
+                {% if photo.tags.all %}
+                    <div class="meta-item">
+                        <div class="meta-icon">🏷️</div>
+                        <div class="meta-content">
+                            <div class="meta-label">タグ</div>
+                            <div class="photo-tags">
+                                {% for tag in photo.tags.all %}
+                                    <a href="{% url 'photo_gallery' %}?tag={{ tag.id }}" 
+                                       class="photo-tag" 
+                                       style="background-color: {{ tag.color }};">
+                                        {{ tag.name }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- 写っている家族 -->
+                {% if photo.family_members.all %}
+                    <div class="meta-item">
+                        <div class="meta-icon">👥</div>
+                        <div class="meta-content">
+                            <div class="meta-label">写っている家族</div>
+                            <div class="photo-members">
+                                {% for member in photo.family_members.all %}
+                                    <a href="{% url 'family_detail' member.pk %}" class="member-link">
+                                        <span>{{ member.role|role_emoji }}</span>
+                                        <span>{{ member.name }}</span>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- 説明・コメント -->
+                {% if photo.description %}
+                    <div class="photo-description">
+                        <strong>📝 説明・コメント</strong><br>
+                        {{ photo.description|linebreaks }}
+                    </div>
+                {% endif %}
+
+                <!-- アクション -->
+                <div class="photo-actions">
+                    <button class="action-btn btn-favorite {% if photo.is_favorite %}active{% endif %}" 
+                            data-photo-id="{{ photo.id }}">
+                        {% if photo.is_favorite %}❤️{% else %}🤍{% endif %}
+                        お気に入り
+                    </button>
+                    
+                    {% if user.is_authenticated %}
+                        <a href="#" class="action-btn btn-edit">
+                            ✏️ 編集
+                        </a>
+                    {% endif %}
+                    
+                    <a href="{% url 'photo_gallery' %}" class="action-btn btn-back">
+                        ⬅️ ギャラリーに戻る
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 関連写真 -->
+        {% if related_photos %}
+            <div class="related-photos">
+                <h2 class="section-title">🔗 関連する写真</h2>
+                <div class="related-grid">
+                    {% for related_photo in related_photos %}
+                        <a href="{% url 'photo_detail' related_photo.pk %}" class="related-item">
+                            <img src="{{ related_photo.image.url }}" alt="{{ related_photo.title }}" class="related-image">
+                            <div class="related-info">
+                                <div class="related-title">{{ related_photo.title|truncate_chars:30 }}</div>
+                                <div class="related-date">{{ related_photo.taken_date|japanese_date }}</div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// お気に入り切り替え機能
+document.addEventListener('DOMContentLoaded', function() {
+    const favoriteBtn = document.querySelector('.btn-favorite');
+    
+    if (favoriteBtn) {
+        favoriteBtn.addEventListener('click', function() {
+            const photoId = this.dataset.photoId;
+            
+            fetch(`/ajax/toggle-favorite/${photoId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // ボタンの表示を更新
+                    this.innerHTML = data.is_favorite ? '❤️ お気に入り' : '🤍 お気に入り';
+                    this.classList.toggle('active', data.is_favorite);
+                    
+                    // 通知表示
+                    showNotification(data.message, 'success');
+                } else {
+                    showNotification('エラーが発生しました: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('エラーが発生しました。', 'error');
+            });
+        });
+    }
+});
+
+// 通知表示関数
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#27ae60' : '#e74c3c'};
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+        font-weight: 500;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// アニメーション用CSS
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

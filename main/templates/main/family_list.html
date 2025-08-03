@@ -1,0 +1,80 @@
+{% extends 'main/base.html' %}
+
+{% block title %}家族一覧 - 家族アプリ{% endblock %}
+
+{% block content %}
+<h1>👨‍👩‍👧‍👦 我が家の家族</h1>
+
+{% if family_members %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem;">
+        {% for member in family_members %}
+            <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #e9ecef; transition: transform 0.2s;">
+                <div style="text-align: center; margin-bottom: 1rem;">
+                    {% if member.photo %}
+                        <img src="{{ member.photo.url }}" alt="{{ member.name }}の写真" 
+                             style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #f8f9fa; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    {% else %}
+                        <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto; color: white; font-size: 2rem;">
+                            {% if member.role == '父' %}👨
+                            {% elif member.role == '母' %}👩
+                            {% elif member.role == '息子' %}👦
+                            {% elif member.role == '娘' %}👧
+                            {% elif member.role == 'おじいちゃん' %}👴
+                            {% elif member.role == 'おばあちゃん' %}👵
+                            {% else %}👤
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div style="text-align: center;">
+                    <h3 style="margin: 0.5rem 0; color: #2c3e50; font-size: 1.3rem;">{{ member.name }}</h3>
+                    <p style="margin: 0.25rem 0; color: #7f8c8d; font-weight: 500;">{{ member.role }}</p>
+                    
+                    {% if member.age %}
+                        <p style="margin: 0.25rem 0; color: #95a5a6;">{{ member.age }}歳</p>
+                    {% endif %}
+                </div>
+                
+                {% if member.favorite_food or member.hobby %}
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ecf0f1;">
+                        {% if member.favorite_food %}
+                            <p style="margin: 0.25rem 0; font-size: 0.9rem; color: #555;">
+                                🍽️ {{ member.favorite_food }}
+                            </p>
+                        {% endif %}
+                        {% if member.hobby %}
+                            <p style="margin: 0.25rem 0; font-size: 0.9rem; color: #555;">
+                                🎨 {{ member.hobby }}
+                            </p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <a href="{% url 'family_detail' member.pk %}" 
+                       style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.9rem; transition: all 0.2s;">
+                        詳細を見る
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div style="text-align: center; padding: 3rem; background-color: #f8f9fa; border-radius: 12px; margin-top: 2rem;">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">👨‍👩‍👧‍👦</div>
+        <h3 style="color: #6c757d; margin-bottom: 1rem;">まだ家族メンバーが登録されていません</h3>
+        <p style="color: #6c757d; margin-bottom: 1.5rem;">管理画面から家族メンバーを追加してください。</p>
+        <a href="/admin/main/familymember/add/" 
+           style="background-color: #28a745; color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 500;">
+            家族メンバーを追加
+        </a>
+    </div>
+{% endif %}
+
+<div style="text-align: center; margin-top: 3rem;">
+    <a href="{% url 'home' %}" style="color: #6c757d; text-decoration: none; font-size: 0.9rem;">
+        ← ホームに戻る
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'main/base.html' %}
+
+{% block title %}{{ member.name }} - 家族アプリ{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div style="background: white; border-radius: 15px; padding: 2rem; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border: 1px solid #e9ecef;">
+        
+        <!-- プロフィール写真とメイン情報 -->
+        <div style="text-align: center; margin-bottom: 2rem;">
+            {% if member.photo %}
+                <img src="{{ member.photo.url }}" alt="{{ member.name }}の写真" 
+                     style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 6px solid #f8f9fa; box-shadow: 0 4px 15px rgba(0,0,0,0.15); margin-bottom: 1rem;">
+            {% else %}
+                <div style="width: 200px; height: 200px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: white; font-size: 4rem; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+                    {% if member.role == '父' %}👨
+                    {% elif member.role == '母' %}👩
+                    {% elif member.role == '息子' %}👦
+                    {% elif member.role == '娘' %}👧
+                    {% elif member.role == 'おじいちゃん' %}👴
+                    {% elif member.role == 'おばあちゃん' %}👵
+                    {% else %}👤
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+            <h1 style="margin: 0; color: #2c3e50; font-size: 2.5rem;">{{ member.name }}</h1>
+            <p style="margin: 0.5rem 0; color: #7f8c8d; font-size: 1.2rem; font-weight: 500;">{{ member.role }}</p>
+        </div>
+        
+        <!-- 基本情報 -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            {% if member.birthday %}
+                <div style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); padding: 1rem; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎂</div>
+                    <h4 style="margin: 0; color: #2c3e50;">誕生日</h4>
+                    <p style="margin: 0.25rem 0; color: #34495e; font-weight: 500;">{{ member.birthday|date:"Y年n月j日" }}</p>
+                    {% if member.age %}
+                        <p style="margin: 0; color: #7f8c8d; font-size: 0.9rem;">{{ member.age }}歳</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+            {% if member.favorite_food %}
+                <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 1rem; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🍽️</div>
+                    <h4 style="margin: 0; color: #2c3e50;">好きな食べ物</h4>
+                    <p style="margin: 0.25rem 0; color: #34495e; font-weight: 500;">{{ member.favorite_food }}</p>
+                </div>
+            {% endif %}
+            
+            {% if member.hobby %}
+                <div style="background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); padding: 1rem; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎨</div>
+                    <h4 style="margin: 0; color: #2c3e50;">趣味</h4>
+                    <p style="margin: 0.25rem 0; color: #34495e; font-weight: 500;">{{ member.hobby }}</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- 自己紹介 -->
+        {% if member.introduction %}
+            <div style="background-color: #f8f9fa; padding: 1.5rem; border-radius: 10px; border-left: 4px solid #3498db; margin-bottom: 2rem;">
+                <h4 style="margin: 0 0 1rem 0; color: #2c3e50; display: flex; align-items: center;">
+                    <span style="margin-right: 0.5rem;">💬</span> メッセージ
+                </h4>
+                <p style="margin: 0; color: #555; line-height: 1.6; font-size: 1.1rem; white-space: pre-wrap;">{{ member.introduction }}</p>
+            </div>
+        {% endif %}
+        
+        <!-- 登録情報 -->
+        <div style="text-align: center; padding-top: 1.5rem; border-top: 1px solid #ecf0f1; color: #95a5a6; font-size: 0.9rem;">
+            <p style="margin: 0;">登録日: {{ member.created_at|date:"Y年n月j日" }}</p>
+            {% if member.updated_at != member.created_at %}
+                <p style="margin: 0;">更新日: {{ member.updated_at|date:"Y年n月j日" }}</p>
+            {% endif %}
+        </div>
+        
+        <!-- アクションボタン -->
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="{% url 'family_list' %}" 
+               style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%); color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 8px; margin-right: 1rem; display: inline-block; transition: all 0.2s;">
+                ← 家族一覧に戻る
+            </a>
+            <a href="/admin/main/familymember/{{ member.pk }}/change/" 
+               style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 8px; display: inline-block; transition: all 0.2s;">
+                プロフィール編集
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

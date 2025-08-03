@@ -1,0 +1,41 @@
+{% load family_tags %}
+
+<div class="member-card" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #e9ecef; transition: transform 0.2s; height: 100%;">
+    <div style="text-align: center; margin-bottom: 1rem;">
+        {% member_avatar member %}
+    </div>
+    
+    <div style="text-align: center;">
+        <h3 style="margin: 0.5rem 0; color: #2c3e50; font-size: 1.3rem;">{{ member.name }}</h3>
+        <p style="margin: 0.25rem 0; color: #7f8c8d; font-weight: 500;">{{ member.role }}</p>
+        
+        {% if member.age %}
+            <p style="margin: 0.25rem 0; color: #95a5a6;">{{ member.age }}歳</p>
+        {% endif %}
+    </div>
+    
+    {% if member.favorite_food or member.hobby %}
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ecf0f1;">
+            {% if member.favorite_food %}
+                <p style="margin: 0.25rem 0; font-size: 0.9rem; color: #555;">
+                    🍽️ {{ member.favorite_food }}
+                </p>
+            {% endif %}
+            {% if member.hobby %}
+                <p style="margin: 0.25rem 0; font-size: 0.9rem; color: #555;">
+                    🎨 {{ member.hobby }}
+                </p>
+            {% endif %}
+        </div>
+    {% endif %}
+    
+    {% if show_detail_link %}
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="{% url 'family_detail' member.pk %}" 
+               class="btn-primary"
+               style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.9rem; transition: all 0.2s; display: inline-block;">
+                詳細を見る
+            </a>
+        </div>
+    {% endif %}
+</div>

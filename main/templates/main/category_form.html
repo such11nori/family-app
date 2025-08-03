@@ -1,0 +1,247 @@
+{% extends 'main/base.html' %}
+
+{% block title %}カテゴリ作成 - 家族アプリ{% endblock %}
+
+{% block content %}
+<style>
+    .form-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #ecf0f1;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+        box-sizing: border-box;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 6px;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary {
+        background: #3498db;
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: #95a5a6;
+        color: white;
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .help-text {
+        font-size: 0.875rem;
+        color: #7f8c8d;
+        margin-top: 0.25rem;
+    }
+    
+    .error-list {
+        color: #e74c3c;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        list-style: none;
+        padding: 0;
+    }
+    
+    .error-list li {
+        padding: 0.25rem 0;
+    }
+    
+    .color-preview {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid #ddd;
+        margin-left: 1rem;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 1rem;
+            margin: 1rem;
+        }
+        
+        .btn-group {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="form-container">
+    <div class="form-header">
+        <h1>🏷️ 新しいカテゴリ作成</h1>
+        <p style="color: #7f8c8d; margin: 0;">
+            イベントを分類するためのカテゴリを作成しましょう
+        </p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label" for="{{ form.name.id_for_label }}">
+                📝 カテゴリ名 *
+            </label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <ul class="error-list">
+                    {% for error in form.name.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <div class="help-text">
+                例: 誕生日、記念日、旅行、学校行事など
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="{{ form.emoji.id_for_label }}">
+                😊 絵文字
+            </label>
+            {{ form.emoji }}
+            {% if form.emoji.errors %}
+                <ul class="error-list">
+                    {% for error in form.emoji.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <div class="help-text">
+                カテゴリを表現する絵文字を入力してください（例: 🎂、❤️、✈️）
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="{{ form.color.id_for_label }}">
+                🎨 カテゴリカラー
+            </label>
+            <div style="display: flex; align-items: center;">
+                {{ form.color }}
+                <span class="color-preview" id="color-preview"></span>
+            </div>
+            {% if form.color.errors %}
+                <ul class="error-list">
+                    {% for error in form.color.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <div class="help-text">
+                カテゴリの識別に使用する色を選択してください
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="{{ form.description.id_for_label }}">
+                📋 説明
+            </label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <ul class="error-list">
+                    {% for error in form.description.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <div class="help-text">
+                カテゴリの詳細説明（任意）
+            </div>
+        </div>
+        
+        <!-- フォームエラー -->
+        {% if form.non_field_errors %}
+            <div style="background: #fdf2f2; border: 1px solid #f5c6cb; color: #721c24; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <!-- ボタン -->
+        <div class="btn-group">
+            <button type="submit" class="btn btn-primary">
+                ➕ 作成する
+            </button>
+            <a href="{% url 'category_list' %}" class="btn btn-secondary">
+                ❌ キャンセル
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const colorInput = document.getElementById('{{ form.color.id_for_label }}');
+    const colorPreview = document.getElementById('color-preview');
+    
+    // 色プレビューを更新する関数
+    function updateColorPreview() {
+        if (colorInput.value) {
+            colorPreview.style.backgroundColor = colorInput.value;
+        }
+    }
+    
+    // 初期値設定
+    updateColorPreview();
+    
+    // 色が変更されたときにプレビューを更新
+    colorInput.addEventListener('input', updateColorPreview);
+    colorInput.addEventListener('change', updateColorPreview);
+});
+</script>
+{% endblock %}

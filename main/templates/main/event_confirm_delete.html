@@ -1,0 +1,181 @@
+{% extends 'main/base.html' %}
+
+{% block title %}イベント削除確認 - {{ object.title }}{% endblock %}
+
+{% block content %}
+<style>
+    .delete-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        max-width: 600px;
+        margin: 2rem auto;
+        text-align: center;
+    }
+    
+    .warning-icon {
+        font-size: 4rem;
+        color: #e74c3c;
+        margin-bottom: 1rem;
+    }
+    
+    .event-info {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+        text-align: left;
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 6px;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+    
+    .btn-danger {
+        background: #e74c3c;
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: #95a5a6;
+        color: white;
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    @media (max-width: 768px) {
+        .delete-container {
+            margin: 1rem;
+            padding: 1rem;
+        }
+        
+        .btn-group {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="delete-container">
+    <div class="warning-icon">⚠️</div>
+    
+    <h1 style="color: #e74c3c; margin-bottom: 1rem;">
+        イベントの削除確認
+    </h1>
+    
+    <p style="color: #7f8c8d; font-size: 1.1rem;">
+        以下のイベントを本当に削除しますか？<br>
+        この操作は取り消すことができません。
+    </p>
+    
+    <div class="event-info">
+        <h3 style="color: #2c3e50; margin-bottom: 1rem;">
+            {{ object.get_priority_emoji }} {{ object.title }}
+        </h3>
+        
+        <div style="display: grid; gap: 0.5rem; font-size: 0.95rem;">
+            <div>
+                <strong>📅 期間:</strong> {{ object.get_duration_display }}
+            </div>
+            
+            {% if object.location %}
+            <div>
+                <strong>📍 場所:</strong> {{ object.location }}
+            </div>
+            {% endif %}
+            
+            {% if object.category %}
+            <div>
+                <strong>🏷️ カテゴリ:</strong> 
+                {{ object.category.emoji }} {{ object.category.name }}
+            </div>
+            {% endif %}
+            
+            <div>
+                <strong>⭐ 重要度:</strong> {{ object.get_priority_display }}
+            </div>
+            
+            <div>
+                <strong>👥 参加者:</strong> 
+                {% if object.participants.all %}
+                    {{ object.get_participants_display }}
+                {% else %}
+                    全員
+                {% endif %}
+            </div>
+            
+            {% if object.repeat != 'none' %}
+            <div>
+                <strong>🔄 繰り返し:</strong> {{ object.get_repeat_display }}
+            </div>
+            {% endif %}
+            
+            <div>
+                <strong>👤 作成者:</strong> {{ object.created_by.username }}
+            </div>
+            
+            <div>
+                <strong>📝 作成日:</strong> {{ object.created_at|date:"Y年n月j日 H:i" }}
+            </div>
+        </div>
+        
+        {% if object.description %}
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ecf0f1;">
+            <strong>📋 詳細:</strong>
+            <div style="margin-top: 0.5rem; line-height: 1.5;">
+                {{ object.description|linebreaksbr|truncatewords:50 }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="btn-group">
+            <button type="submit" class="btn btn-danger">
+                🗑️ 削除する
+            </button>
+            <a href="{% url 'event_detail' object.pk %}" class="btn btn-secondary">
+                ❌ キャンセル
+            </a>
+        </div>
+    </form>
+    
+    <p style="color: #95a5a6; font-size: 0.9rem; margin-top: 1.5rem;">
+        ⚠️ 削除されたイベントは復元できません
+    </p>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 削除ボタンに確認処理を追加
+    const deleteForm = document.querySelector('form');
+    if (deleteForm) {
+        deleteForm.addEventListener('submit', function(e) {
+            const confirmed = confirm('本当にこのイベントを削除しますか？この操作は取り消すことができません。');
+            if (!confirmed) {
+                e.preventDefault();
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

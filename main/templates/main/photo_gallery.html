@@ -1,0 +1,551 @@
+{% extends 'main/base.html' %}
+{% load family_tags %}
+{% load static %}
+
+{% block title %}フォトギャラリー - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .photo-gallery {
+        padding: 2rem 0;
+    }
+    
+    .gallery-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .gallery-title {
+        font-size: 2.5rem;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+    
+    .gallery-subtitle {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+    }
+    
+    .gallery-filters {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .filter-section {
+        margin-bottom: 1.5rem;
+    }
+    
+    .filter-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .filter-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .photo-item {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+    }
+    
+    .photo-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .photo-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .photo-item:hover .photo-image {
+        transform: scale(1.05);
+    }
+    
+    .photo-info {
+        padding: 1.5rem;
+    }
+    
+    .photo-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+    }
+    
+    .photo-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        color: #7f8c8d;
+    }
+    
+    .photo-date {
+        background: #e8f4fd;
+        color: #2980b9;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+    
+    .photo-location {
+        background: #fef9e7;
+        color: #f39c12;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+    
+    .photo-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .photo-tag {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .photo-tag:hover {
+        opacity: 0.8;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .photo-members {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .member-badge {
+        background: #e8f5e8;
+        color: #27ae60;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-decoration: none;
+    }
+    
+    .member-badge:hover {
+        background: #27ae60;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .photo-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+        border-top: 1px solid #ecf0f1;
+    }
+    
+    .favorite-btn {
+        background: none;
+        border: none;
+        color: #e74c3c;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+    
+    .favorite-btn:hover {
+        transform: scale(1.2);
+    }
+    
+    .favorite-btn.active {
+        color: #e74c3c;
+    }
+    
+    .view-btn {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .view-btn:hover {
+        background: linear-gradient(135deg, #2980b9, #21618c);
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+    
+    .no-photos {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #7f8c8d;
+    }
+    
+    .no-photos-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .filter-toggle {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-toggle:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+    }
+    
+    .current-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .current-filter {
+        background: #e74c3c;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        text-decoration: none;
+        position: relative;
+    }
+    
+    .current-filter:hover {
+        background: #c0392b;
+        color: white;
+        text-decoration: none;
+    }
+    
+    @media (max-width: 768px) {
+        .photo-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .gallery-filters {
+            padding: 1rem;
+        }
+        
+        .filter-controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .filter-group {
+            min-width: unset;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="photo-gallery">
+    <div class="container">
+        <!-- ヘッダー -->
+        <div class="gallery-header">
+            <h1 class="gallery-title">📸 フォトギャラリー</h1>
+            <p class="gallery-subtitle">家族の大切な思い出を保存・共有しよう</p>
+        </div>
+
+        <!-- フィルター -->
+        <div class="gallery-filters">
+            <button class="filter-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#filterSection">
+                🔍 検索・フィルター
+            </button>
+            
+            <div class="collapse show" id="filterSection">
+                <form method="get" class="mt-3">
+                    <div class="row">
+                        <!-- 検索 -->
+                        <div class="col-md-6 mb-3">
+                            <label class="filter-label">🔍 キーワード検索</label>
+                            <input type="text" class="form-control" name="search" 
+                                   value="{{ search_query }}" 
+                                   placeholder="タイトル、説明、場所で検索...">
+                        </div>
+
+                        <!-- タグフィルター -->
+                        <div class="col-md-6 mb-3">
+                            <label class="filter-label">🏷️ タグ</label>
+                            <select class="form-control" name="tag">
+                                <option value="">すべてのタグ</option>
+                                {% for tag in filter_data.tags %}
+                                    <option value="{{ tag.id }}" 
+                                            {% if current_filters.tag == tag.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ tag.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- 家族メンバーフィルター -->
+                        <div class="col-md-6 mb-3">
+                            <label class="filter-label">👥 家族メンバー</label>
+                            <select class="form-control" name="member">
+                                <option value="">すべての家族</option>
+                                {% for member in filter_data.members %}
+                                    <option value="{{ member.id }}" 
+                                            {% if current_filters.member == member.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ member.role|role_emoji }} {{ member.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- アルバムフィルター -->
+                        <div class="col-md-6 mb-3">
+                            <label class="filter-label">📂 アルバム</label>
+                            <select class="form-control" name="album">
+                                <option value="">すべてのアルバム</option>
+                                {% for album in filter_data.albums %}
+                                    <option value="{{ album.id }}" 
+                                            {% if current_filters.album == album.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ album.title }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- 年フィルター -->
+                        <div class="col-md-6 mb-3">
+                            <label class="filter-label">📅 年</label>
+                            <select class="form-control" name="year">
+                                <option value="">すべての年</option>
+                                {% for year_date in filter_data.years %}
+                                    <option value="{{ year_date.year }}" 
+                                            {% if current_filters.year == year_date.year|stringformat:"s" %}selected{% endif %}>
+                                        {{ year_date.year }}年
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- お気に入りフィルター -->
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="favorite" value="1" 
+                                       {% if current_filters.favorite %}checked{% endif %}>
+                                <label class="form-check-label">
+                                    ⭐ お気に入りのみ表示
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-controls">
+                        <button type="submit" class="btn btn-primary">🔍 検索</button>
+                        <a href="{% url 'photo_gallery' %}" class="btn btn-outline-secondary">🔄 リセット</a>
+                    </div>
+                </form>
+
+                <!-- 現在のフィルター表示 -->
+                {% if search_query or current_filters.tag or current_filters.member or current_filters.album or current_filters.year or current_filters.favorite %}
+                    <div class="current-filters">
+                        <small class="text-muted">現在のフィルター:</small>
+                        {% if search_query %}
+                            <span class="current-filter">検索: {{ search_query }}</span>
+                        {% endif %}
+                        {% if current_filters.tag %}
+                            <span class="current-filter">タグ: {{ current_filters.tag }}</span>
+                        {% endif %}
+                        {% if current_filters.member %}
+                            <span class="current-filter">メンバー: {{ current_filters.member }}</span>
+                        {% endif %}
+                        {% if current_filters.album %}
+                            <span class="current-filter">アルバム: {{ current_filters.album }}</span>
+                        {% endif %}
+                        {% if current_filters.year %}
+                            <span class="current-filter">年: {{ current_filters.year }}年</span>
+                        {% endif %}
+                        {% if current_filters.favorite %}
+                            <span class="current-filter">お気に入り</span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 写真グリッド -->
+        {% if page_obj.object_list %}
+            <div class="photo-grid">
+                {% for photo in page_obj.object_list %}
+                    <div class="photo-item">
+                        <img src="{{ photo.image.url }}" alt="{{ photo.title }}" class="photo-image">
+                        
+                        <div class="photo-info">
+                            <h3 class="photo-title">{{ photo.title }}</h3>
+                            
+                            <div class="photo-meta">
+                                <span class="photo-date">{{ photo.taken_date|japanese_date }}</span>
+                                {% if photo.location %}
+                                    <span class="photo-location">📍 {{ photo.location }}</span>
+                                {% endif %}
+                            </div>
+
+                            {% if photo.tags.all %}
+                                <div class="photo-tags">
+                                    {% for tag in photo.tags.all %}
+                                        <a href="{% url 'photo_gallery' %}?tag={{ tag.id }}" 
+                                           class="photo-tag" 
+                                           style="background-color: {{ tag.color }};">
+                                            {{ tag.name }}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            {% if photo.family_members.all %}
+                                <div class="photo-members">
+                                    {% for member in photo.family_members.all %}
+                                        <a href="{% url 'family_detail' member.pk %}" class="member-badge">
+                                            {{ member.role|role_emoji }} {{ member.name }}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            {% if photo.description %}
+                                <p class="photo-description">{{ photo.description|truncate_chars:80 }}</p>
+                            {% endif %}
+
+                            <div class="photo-actions">
+                                <button class="favorite-btn {% if photo.is_favorite %}active{% endif %}" 
+                                        data-photo-id="{{ photo.id }}">
+                                    {% if photo.is_favorite %}❤️{% else %}🤍{% endif %}
+                                </button>
+                                <a href="{% url 'photo_detail' photo.pk %}" class="view-btn">詳細を見る</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- ページネーション -->
+            {% custom_pagination page_obj %}
+        {% else %}
+            <div class="no-photos">
+                <div class="no-photos-icon">📷</div>
+                <h3>写真が見つかりませんでした</h3>
+                <p>条件を変更して再度検索してみてください。</p>
+                <a href="{% url 'photo_gallery' %}" class="btn btn-primary">すべての写真を見る</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// お気に入り切り替え機能
+document.addEventListener('DOMContentLoaded', function() {
+    const favoriteButtons = document.querySelectorAll('.favorite-btn');
+    
+    favoriteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const photoId = this.dataset.photoId;
+            
+            fetch(`/ajax/toggle-favorite/${photoId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.innerHTML = data.is_favorite ? '❤️' : '🤍';
+                    this.classList.toggle('active', data.is_favorite);
+                    
+                    // 簡単な通知表示
+                    const notification = document.createElement('div');
+                    notification.textContent = data.message;
+                    notification.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: #27ae60;
+                        color: white;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        z-index: 1000;
+                        animation: slideIn 0.3s ease;
+                    `;
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 3000);
+                } else {
+                    alert('エラーが発生しました: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('エラーが発生しました。');
+            });
+        });
+    });
+});
+
+// CSS for notification animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

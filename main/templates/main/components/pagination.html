@@ -1,0 +1,154 @@
+{% if page_obj and page_obj.paginator.num_pages > 1 %}
+<nav aria-label="ページネーション" class="pagination-nav">
+    <div class="pagination-container">
+        <div class="pagination-info">
+            <span class="pagination-text">
+                {{ page_obj.start_index }}〜{{ page_obj.end_index }}件 / 全{{ page_obj.paginator.count }}件
+            </span>
+        </div>
+        
+        <ul class="pagination">
+            <!-- 最初のページ -->
+            {% if show_first %}
+                <li class="pagination-item">
+                    <a href="?page=1{{ request.GET|urlencode }}" class="pagination-link">
+                        ⏮️ 最初
+                    </a>
+                </li>
+            {% endif %}
+            
+            <!-- 前のページ -->
+            {% if page_obj.has_previous %}
+                <li class="pagination-item">
+                    <a href="?page={{ page_obj.previous_page_number }}{{ request.GET|urlencode }}" class="pagination-link">
+                        ⬅️ 前へ
+                    </a>
+                </li>
+            {% endif %}
+            
+            <!-- ページ番号 -->
+            {% for page_num in page_range %}
+                {% if page_num == page_obj.number %}
+                    <li class="pagination-item active">
+                        <span class="pagination-link current">{{ page_num }}</span>
+                    </li>
+                {% else %}
+                    <li class="pagination-item">
+                        <a href="?page={{ page_num }}{{ request.GET|urlencode }}" class="pagination-link">
+                            {{ page_num }}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            
+            <!-- 次のページ -->
+            {% if page_obj.has_next %}
+                <li class="pagination-item">
+                    <a href="?page={{ page_obj.next_page_number }}{{ request.GET|urlencode }}" class="pagination-link">
+                        次へ ➡️
+                    </a>
+                </li>
+            {% endif %}
+            
+            <!-- 最後のページ -->
+            {% if show_last %}
+                <li class="pagination-item">
+                    <a href="?page={{ page_obj.paginator.num_pages }}{{ request.GET|urlencode }}" class="pagination-link">
+                        最後 ⏭️
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<style>
+.pagination-nav {
+    margin: 3rem 0;
+    padding: 2rem 0;
+    border-top: 1px solid #ecf0f1;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.pagination-info {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.pagination-item {
+    margin: 0;
+}
+
+.pagination-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0.5rem 0.75rem;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    color: #495057;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.pagination-link:hover {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+.pagination-item.active .pagination-link.current {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+    cursor: default;
+    box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
+}
+
+.pagination-item.active .pagination-link.current:hover {
+    transform: none;
+}
+
+@media (max-width: 768px) {
+    .pagination-container {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .pagination-link {
+        min-width: 35px;
+        height: 35px;
+        padding: 0.4rem 0.6rem;
+        font-size: 0.9rem;
+    }
+}
+</style>
+{% endif %}

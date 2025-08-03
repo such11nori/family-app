@@ -1,0 +1,132 @@
+{% extends 'main/base.html' %}
+
+{% block title %}カテゴリ一覧 - 家族アプリ{% endblock %}
+
+{% block content %}
+<style>
+    .category-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .category-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .category-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .category-name {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .category-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #ddd;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 6px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: bold;
+        display: inline-block;
+    }
+    
+    .btn-primary {
+        background: #3498db;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #2980b9;
+        color: white;
+    }
+    
+    .stats-info {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .category-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .category-header {
+            padding: 1rem;
+        }
+    }
+</style>
+
+<div class="category-header">
+    <h1>🏷️ イベントカテゴリ管理</h1>
+    <p>イベントを分類するためのカテゴリを管理できます</p>
+</div>
+
+<div style="margin-bottom: 2rem;">
+    <a href="{% url 'category_create' %}" class="btn btn-primary">
+        ➕ 新しいカテゴリを作成
+    </a>
+    <a href="{% url 'event_calendar' %}" class="btn" style="background: #95a5a6; color: white; margin-left: 1rem;">
+        ← カレンダーに戻る
+    </a>
+</div>
+
+{% if categories %}
+    <div class="category-grid">
+        {% for category in categories %}
+            <div class="category-card">
+                <div class="category-name">
+                    <span style="font-size: 1.5rem;">{{ category.emoji }}</span>
+                    <span class="category-color" style="background-color: {{ category.color }};"></span>
+                    <h3 style="margin: 0; color: #2c3e50;">{{ category.name }}</h3>
+                </div>
+                
+                {% if category.description %}
+                    <p style="color: #555; margin-bottom: 1rem;">{{ category.description }}</p>
+                {% endif %}
+                
+                <div class="stats-info">
+                    📊 {{ category.event_count }}件のイベント
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div style="text-align: center; padding: 3rem; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <p style="color: #7f8c8d; font-size: 1.1rem; margin-bottom: 1.5rem;">
+            🏷️ まだカテゴリが作成されていません
+        </p>
+        <a href="{% url 'category_create' %}" class="btn btn-primary">
+            最初のカテゴリを作成する
+        </a>
+    </div>
+{% endif %}
+{% endblock %}

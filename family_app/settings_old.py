@@ -10,28 +10,31 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-import os
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-your-development-key-here')
+SECRET_KEY = 'django-insecure-jc5zp^v$l4^q)(md#(=fq2(j^tts#45!)81!r!+8x-vp)6++xo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_ENV') != 'production'
+DEBUG = 'RENDER' not in os.environ
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '.onrender.com',  # Renderのドメインを許可
-]
+ALLOWED_HOSTS = []
+
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
 
 # Application definition
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,7 +47,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # 静的ファイル配信用
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -62,7 +65,6 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -73,27 +75,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'family_app.wsgi.application'
 
+
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-if DEBUG:
-    # 開発環境用SQLite
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-else:
-    # 本番環境用PostgreSQL (Render提供)
-    import dj_database_url
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=os.environ.get('DATABASE_URL'),
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -113,37 +105,34 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'ja'
-TIME_ZONE = 'Asia/Tokyo'
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'UTC'
+
 USE_I18N = True
+
 USE_TZ = True
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = 'static/'
 
-# Media files (User uploads)
+# 本番環境用の静的ファイル設定
+if not DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Media files (アップロードされた画像など)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# WhiteNoise設定（静的ファイル圧縮）
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# セキュリティ設定（本番環境用）
-if not DEBUG:
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_FRAME_OPTIONS = 'DENY'
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True

@@ -1,0 +1,62 @@
+{% load family_tags %}
+<div class="event-card" style="border-left-color: {{ event.get_status_color }};">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+        <h4 style="margin: 0; color: #2c3e50;">
+            <span class="event-priority">{{ event.get_priority_emoji }}</span>
+            <a href="{% url 'event_detail' event.id %}" style="text-decoration: none; color: inherit;">
+                {{ event.title }}
+            </a>
+        </h4>
+        
+        <div style="display: flex; gap: 0.5rem;">
+            <a href="{% url 'event_update' event.pk %}" 
+               style="color: #3498db; text-decoration: none; font-size: 0.9rem;">
+                ✏️ 編集
+            </a>
+            <a href="{% url 'event_delete' event.pk %}" 
+               style="color: #e74c3c; text-decoration: none; font-size: 0.9rem;"
+               onclick="return confirm('このイベントを削除しますか？')">
+                🗑️ 削除
+            </a>
+        </div>
+    </div>
+    
+    {% if event.description %}
+        <p style="margin: 0.5rem 0; color: #555;">{{ event.description|truncatewords:20 }}</p>
+    {% endif %}
+    
+    <div class="event-meta">
+        <span>
+            📅 {{ event.get_duration_display }}
+        </span>
+        
+        {% if event.location %}
+            <span>
+                📍 {{ event.location }}
+            </span>
+        {% endif %}
+        
+        {% if event.category %}
+            <span class="event-category" style="background-color: {{ event.category.color }};">
+                {{ event.category.emoji }} {{ event.category.name }}
+            </span>
+        {% endif %}
+        
+        {% if event.is_reminder_enabled %}
+            <span>
+                🔔 リマインダー
+            </span>
+        {% endif %}
+    </div>
+    
+    {% if event.participants.all %}
+        <div class="event-participants" style="margin-top: 0.5rem;">
+            <span style="font-size: 0.9rem; color: #7f8c8d;">参加者:</span>
+            {% for participant in event.participants.all %}
+                <span class="participant-tag">
+                    {{ participant.role|role_emoji }} {{ participant.name }}
+                </span>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
