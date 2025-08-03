@@ -13,9 +13,12 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 
-# デバッグ情報（一時的）
-print(f"DJANGO_ENV環境変数: {os.environ.get('DJANGO_ENV', '未設定')}")
-print(f"RENDER_EXTERNAL_HOSTNAME環境変数: {os.environ.get('RENDER_EXTERNAL_HOSTNAME', '未設定')}")
+# 強制デバッグ出力
+print("=" * 50)
+print("FAMILY APP SETTINGS LOADING...")
+print(f"DJANGO_ENV: {os.environ.get('DJANGO_ENV', 'NOT_SET')}")
+print(f"ALL ALLOWED_HOSTS WILL INCLUDE: family-app-j7yv.onrender.com")
+print("=" * 50)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,25 +32,12 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-your-development-key-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_ENV', 'development') != 'production'
 
-# ALLOWED_HOSTS設定 - 緊急修正版
-ALLOWED_HOSTS = [
-    'family-app-j7yv.onrender.com',  # 直接指定（確実）
-    '.onrender.com',
-    'localhost',
-    '127.0.0.1',
-]
+# 🚨 緊急設定：全てのホストを許可（一時的）
+ALLOWED_HOSTS = ['*']
 
-# 環境変数からも追加設定可能
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_EXTERNAL_HOSTNAME and RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
-
-# 追加の環境変数設定
-additional_hosts = os.environ.get('ALLOWED_HOSTS', '').split(',')
-for host in additional_hosts:
-    host = host.strip()
-    if host and host not in ALLOWED_HOSTS:
-        ALLOWED_HOSTS.append(host)
+print(f"🔧 DEBUG MODE: {DEBUG}")
+print(f"🌐 ALLOWED_HOSTS: {ALLOWED_HOSTS}")
+print("🚨 一時的に全てのホストからのアクセスを許可しています")
 
 # Application definition
 INSTALLED_APPS = [
