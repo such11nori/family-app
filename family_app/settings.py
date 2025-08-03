@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 
+# デバッグ情報（一時的）
+print(f"DJANGO_ENV環境変数: {os.environ.get('DJANGO_ENV', '未設定')}")
+print(f"RENDER_EXTERNAL_HOSTNAME環境変数: {os.environ.get('RENDER_EXTERNAL_HOSTNAME', '未設定')}")
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,24 +27,27 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-your-development-key-here')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_ENV') != 'production'
+DEBUG = os.environ.get('DJANGO_ENV', 'development') != 'production'
 
-# ALLOWED_HOSTS設定
-if DEBUG:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-else:
-    # 本番環境では環境変数から取得、または Render のデフォルト設定
-    allowed_hosts = os.environ.get('ALLOWED_HOSTS', '').split(',')
-    ALLOWED_HOSTS = [
-        'localhost',
-        '127.0.0.1',
-        '.onrender.com',
-        'family-app-j7yv.onrender.com',
-        '*.onrender.com',
-    ]
-    # 環境変数があれば追加
-    if allowed_hosts and allowed_hosts[0]:
-        ALLOWED_HOSTS.extend(allowed_hosts)
+# ALLOWED_HOSTS設定 - 緊急修正版
+ALLOWED_HOSTS = [
+    'family-app-j7yv.onrender.com',  # 直接指定（確実）
+    '.onrender.com',
+    'localhost',
+    '127.0.0.1',
+]
+
+# 環境変数からも追加設定可能
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME and RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+# 追加の環境変数設定
+additional_hosts = os.environ.get('ALLOWED_HOSTS', '').split(',')
+for host in additional_hosts:
+    host = host.strip()
+    if host and host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(host)
 
 # Application definition
 INSTALLED_APPS = [
